@@ -1,0 +1,74 @@
+package com.lazerycode.selenium.tests;
+
+import com.lazerycode.selenium.DriverBase;
+import org.junit.rules.Timeout;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.internal.ElementScrollBehavior;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.Test;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+public class YandexMarket extends DriverBase {
+    @Test
+    public void tabletSearch() throws Exception {
+        WebDriver driver = getDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.get("http://yandex.ru/");
+        //Переходим в нужный раздел
+        driver.findElement(By.linkText("Маркет")).click();
+        System.out.println("Page title is: " + driver.getTitle());
+        driver.findElement(By.linkText("Сотовые телефоны")).click();
+        System.out.println("Page title is: " + driver.getTitle());
+        driver.findElement(By.linkText("Перейти ко всем фильтрам")).click();
+        //Задаем ценовой диапазон
+        WebElement price_min = driver.findElement(By.id("glf-pricefrom-var"));
+        price_max.sendKeys("20000");
+        //Ожидаем пока обработается значение, иначе граница ценового диапазона не установится
+        Thread.sleep(1000);
+        //Задаем диагональ экрана
+        WebElement phone = driver.findElement(By.id("labeltextfield3969337202"));
+        phone.value("3");
+        //Ожидаем пока обработается значение, иначе граница диагонали экрана не установится
+        Thread.sleep(1000);
+        //Выбираем производителей из развернутого списка
+        driver.findElement(By.xpath("//span[text() = 'Ещё']/..")).click();
+        driver.findElement(By.xpath("//div[@class='n-filter-block__list-items i-bem']//label[text() = 'Samsung']")).click();
+        WebElement a_category = driver.findElement(By.xpath("//div[text()='A']"));
+        driver.findElement(By.xpath("//div[@class='n-filter-block__list-items i-bem']//label[text() = 'vivo']")).click();
+        WebElement b_category = driver.findElement(By.xpath("//div[text()='B']"));
+        driver.findElement(By.xpath("//div[@class='n-filter-block__list-items i-bem']//label[text() = 'OPPO']")).click();
+        WebElement c_category = driver.findElement(By.xpath("//div[text()='C']"));
+        driver.findElement(By.xpath("//div[@class='n-filter-block__list-items i-bem']//label[text() = 'realme']")).click();
+        WebElement d_category = driver.findElement(By.xpath("//div[text()='D']"));
+        driver.findElement(By.xpath("//div[@class='n-filter-block__list-items i-bem']//label[text() = 'Xiaomi']")).click();
+        WebElement e_category = driver.findElement(By.xpath("//div[text()='E']"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", a_category);
+        driver.findElement(By.xpath("//label[@for='glf-7893318-153080']")).click();
+        driver.findElement(By.xpath("//span[text() = 'Подобрать']/..")).click();
+        //Создаем список всех найденных товаров
+        List<WebElement> search_results = driver.findElements(By.xpath("//div[@class='n-snippet-card2__part n-snippet-card2__part_type_center']"));
+        //Убеждаемся что товаров 10
+        assertThat(10, equalTo(search_results.size()));
+        //Сохраняем название товара и ищем такой товар через поиск
+        WebElement tablet = search_results.get(1);
+        String find_tablet = tablet.findElement(By.xpath(".//*[@id="main"]")).getText();
+        WebElement search = driver.findElement(By.xpath("//*[@id="page-cwga4opaz0l"]/div/div/div/div/div/div[1]/div/div/div/article/div[3]/div[1]/h3/a/span));
+        search.sendKeys(find_tablet);
+        search.submit();
+        String concrete_tablet_title =  driver.findElement(By.xpath("//h1[contains(@class,'_2vCnw cia-vs cia-cs')])).getText();
+        find_tablet.equals(concrete_tablet_title);
+        String mark = driver.findElement(By.xpath("//h3[a(contains[text()," +find_tablet+"])/div[@data-auto="rating-badge"]/span[@data-auto= rating-badge-value"]")).get text();
+        System.out.println(mark);
+        
+        driver.close();       
+        System.exit(0);
+    }
+}
